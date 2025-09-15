@@ -173,11 +173,190 @@ class ResumeAnalyzer {
             score: 100,
             feedback: '',
             gatekeepingIssues: [],
-            recommendations: []
+            recommendations: [],
+            toneIssues: []
         };
 
         const lines = resumeText.split('\n');
         const text = resumeText.toLowerCase();
+
+        // Comprehensive problematic words and phrases detection
+        const problematicWords = {
+            // Overused and Generic Buzzwords
+            'synergy': 'Corporate jargon that has been overused. Use clear, specific language instead.',
+            'leverage': 'Overused buzzword. Use more direct language like "use" or "utilize."',
+            'paradigm': 'Pretentious language. Use simpler, clearer terms.',
+            'proactive': 'Overused. Show proactivity through specific examples.',
+            'scalable': 'Technical buzzword. Explain scalability with specific examples.',
+            'dynamic': 'Vague descriptor. Use specific, measurable terms.',
+            'innovative': 'Overused without context. Provide specific examples of innovation.',
+            'holistic': 'Overused buzzword. Describe specific comprehensive approaches.',
+            'streamlined': 'Overused term. Describe specific process improvements.',
+            'cutting-edge': 'Overused. Provide specific examples of advanced technology or methods.',
+            'best-of-breed': 'Overused marketing term. Provide specific technology details.',
+            'thought leader': 'Overused term. Describe specific thought leadership achievements.',
+            'core competencies': 'Overused business jargon. List specific skills and abilities.',
+            
+            // Weak or Passive Verbs
+            'assisted': 'Weak verb. Use stronger action verbs that show leadership.',
+            'helped': 'Particularly weak verb. Show the extent of your involvement.',
+            'supported': 'Weak verb. Use stronger action verbs that show direct contribution.',
+            'worked on': 'Vague phrase. Be specific about your role and impact.',
+            'was a part of': 'Passive phrase. Use active voice and strong action verbs.',
+            'was responsible for': 'Passive language. Use strong action verbs like "Managed," "Developed," or "Implemented."',
+            'participated in': 'Weak phrase. Use stronger action verbs that show leadership.',
+            'duties included': 'Weak phrase. Focus on accomplishments, not duties.',
+            
+            // Corporate Jargon and Clichés
+            'thinking outside the box': 'Overused corporate cliché. Describe specific creative solutions.',
+            'circle back': 'Corporate jargon. Use clear, direct language.',
+            'touch base': 'Corporate jargon. Use clear, direct language.',
+            'open door policy': 'Corporate cliché. Describe specific accessibility practices.',
+            'low-hanging fruit': 'Corporate cliché. Describe specific easy wins.',
+            'move the needle': 'Corporate cliché. Describe specific measurable impact.',
+            'take it to the next level': 'Corporate cliché. Describe specific improvements.',
+            
+            // Exaggerated and Unverifiable Claims
+            'expert': 'Overly confident. Let experience and accomplishments speak for themselves.',
+            'master': 'Overly confident. Use more modest language like "experienced" or "skilled".',
+            'guru': 'Overly confident and unprofessional. Focus on specific skills and expertise.',
+            'ninja': 'Overly confident and unprofessional. Focus on specific skills and expertise.',
+            'rock star': 'Overly confident and unprofessional. Focus on specific skills and expertise.',
+            'pioneer': 'Overly confident. Describe specific pioneering achievements instead.',
+            'visionary': 'Overly confident. Describe specific vision and results.',
+            'mission-critical': 'Overused corporate term. Describe specific critical functions.',
+            
+            // Personal and Unprofessional Language
+            'i ': 'Personal pronoun. Start with strong action verbs instead.',
+            'my ': 'Personal pronoun. Focus on accomplishments, not ownership.',
+            'me ': 'Personal pronoun. Use professional, objective language.',
+            'our ': 'Personal pronoun. Use professional, objective language.',
+            'we ': 'Personal pronoun. Use professional, objective language.',
+            
+            // Unnecessary or Redundant Phrases
+            'references available upon request': 'Waste of space. It\'s assumed you will provide references when asked.',
+            'proven track record': 'Cliché that is meaningless without actual proof. Provide specific evidence.',
+            'highly motivated': 'Assumed quality. Show motivation through specific achievements.',
+            'excellent communicator': 'Generic claim. Provide specific communication achievements.',
+            'excellent communication skills': 'Generic claim. Provide specific communication achievements.',
+            
+            // Vague and Cliché Descriptors
+            'hardworking': 'Assumed quality. Show work ethic through specific achievements instead.',
+            'results-driven': 'Meaningless without actual results. Include specific metrics and outcomes.',
+            'team player': 'Generic and doesn\'t show specific contribution. Use concrete examples with quantifiable results.',
+            'self-motivated': 'Assumed quality. Demonstrate motivation through achievements.',
+            'detail-oriented': 'Vague descriptor. Show attention to detail with specific examples.',
+            'go-getter': 'Cliché term. Show initiative through specific actions.',
+            'passionate': 'Show passion through work examples, not by stating it.',
+            'disruptive': 'Overused buzzword. Describe specific impact instead.',
+            'strategic': 'Overused without context. Describe specific strategic actions.',
+            'robust': 'Overused technical buzzword. Use more specific descriptors.',
+            'seamless': 'Overused marketing term. Describe the actual process or outcome.',
+            'best-in-class': 'Overused marketing term. Provide specific metrics or achievements.',
+            'world-class': 'Overused superlative. Focus on specific accomplishments.',
+            'industry-leading': 'Overused claim. Provide specific evidence of leadership.',
+            'game-changing': 'Overused buzzword. Describe specific impact and results.',
+            'revolutionary': 'Overused superlative. Provide specific examples of innovation.',
+            'groundbreaking': 'Overused term. Describe specific groundbreaking achievements.',
+            'state-of-the-art': 'Overused technical term. Provide specific technology details.',
+            'next-generation': 'Overused marketing term. Describe specific new features or capabilities.',
+            'value-added': 'Overused business term. Describe specific value provided.',
+            'best practices': 'Overused term. Describe specific practices implemented.',
+            'key performance indicators': 'Overused term. Use "metrics" or "KPIs" instead.',
+            'stakeholder engagement': 'Overused corporate term. Describe specific stakeholder interactions.',
+            'cross-functional': 'Overused term. Describe specific cross-department collaboration.',
+            'end-to-end': 'Overused technical term. Describe specific process coverage.',
+            'full-stack': 'Overused technical term. List specific technologies and frameworks.',
+            'cloud-native': 'Overused technical term. Describe specific cloud technologies used.',
+            'microservices': 'Overused technical term. Describe specific service architecture.',
+            'agile methodology': 'Overused term. Describe specific agile practices implemented.',
+            'scrum master': 'Overused term. Describe specific scrum leadership achievements.',
+            'devops': 'Overused term. List specific DevOps tools and practices.',
+            'ci/cd': 'Overused technical term. Describe specific CI/CD pipeline implementations.',
+            'kubernetes': 'Overused term. Describe specific K8s implementations and results.',
+            'docker': 'Overused term. Describe specific containerization achievements.',
+            'aws': 'Overused term. List specific AWS services and implementations.',
+            'azure': 'Overused term. List specific Azure services and implementations.',
+            'gcp': 'Overused term. List specific GCP services and implementations.',
+            'machine learning': 'Overused term. Describe specific ML models and results.',
+            'artificial intelligence': 'Overused term. Describe specific AI implementations.',
+            'data science': 'Overused term. Describe specific data science projects and results.',
+            'big data': 'Overused term. Describe specific big data technologies and results.',
+            'blockchain': 'Overused term. Describe specific blockchain implementations.',
+            'iot': 'Overused term. Describe specific IoT projects and results.',
+            'cybersecurity': 'Overused term. List specific security tools and achievements.',
+            'penetration testing': 'Overused term. Describe specific pen testing methodologies and results.',
+            'vulnerability assessment': 'Overused term. Describe specific assessment tools and findings.',
+            'incident response': 'Overused term. Describe specific incident response procedures and results.',
+            'threat hunting': 'Overused term. Describe specific threat hunting techniques and findings.',
+            'malware analysis': 'Overused term. Describe specific malware analysis tools and results.',
+            'forensics': 'Overused term. Describe specific forensic tools and procedures.',
+            'compliance': 'Overused term. List specific compliance frameworks and achievements.',
+            'risk assessment': 'Overused term. Describe specific risk assessment methodologies and results.',
+            'security operations center': 'Overused term. Describe specific SOC procedures and achievements.',
+            'siem': 'Overused term. List specific SIEM tools and implementations.',
+            'ids': 'Overused term. Describe specific IDS tools and configurations.',
+            'ips': 'Overused term. Describe specific IPS tools and configurations.',
+            'firewall': 'Overused term. List specific firewall technologies and configurations.',
+            'vpn': 'Overused term. Describe specific VPN implementations and results.',
+            'encryption': 'Overused term. Describe specific encryption technologies and implementations.',
+            'authentication': 'Overused term. Describe specific authentication systems and results.',
+            'authorization': 'Overused term. Describe specific authorization systems and results.',
+            'access control': 'Overused term. Describe specific access control systems and results.',
+            'identity management': 'Overused term. Describe specific identity management systems and results.',
+            'single sign-on': 'Overused term. Describe specific SSO implementations and results.',
+            'multi-factor authentication': 'Overused term. Describe specific MFA implementations and results.',
+            'zero trust': 'Overused term. Describe specific zero trust implementations and results.',
+            'defense in depth': 'Overused term. Describe specific defense strategies and results.',
+            'security by design': 'Overused term. Describe specific security design principles and results.',
+            'privacy by design': 'Overused term. Describe specific privacy design principles and results.',
+            'gdpr': 'Overused term. Describe specific GDPR compliance implementations and results.',
+            'hipaa': 'Overused term. Describe specific HIPAA compliance implementations and results.',
+            'sox': 'Overused term. Describe specific SOX compliance implementations and results.',
+            'pci dss': 'Overused term. Describe specific PCI DSS compliance implementations and results.',
+            'iso 27001': 'Overused term. Describe specific ISO 27001 implementations and results.',
+            'nist': 'Overused term. Describe specific NIST framework implementations and results.',
+            'cobit': 'Overused term. Describe specific COBIT implementations and results.',
+            'itil': 'Overused term. Describe specific ITIL implementations and results.',
+            'ceh': 'Overused term. Describe specific ethical hacking achievements and results.',
+            'cissp': 'Overused term. Describe specific security management achievements and results.',
+            'cism': 'Overused term. Describe specific security management achievements and results.',
+            'cisa': 'Overused term. Describe specific security auditing achievements and results.',
+            'security+': 'Overused term. Describe specific security fundamentals achievements and results.',
+            'oscp': 'Overused term. Describe specific penetration testing achievements and results.',
+            'osce': 'Overused term. Describe specific advanced penetration testing achievements and results.',
+            'gcih': 'Overused term. Describe specific incident handling achievements and results.',
+            'gpen': 'Overused term. Describe specific penetration testing achievements and results.',
+            'gsec': 'Overused term. Describe specific security essentials achievements and results.',
+            'gcia': 'Overused term. Describe specific intrusion analysis achievements and results.',
+            'gcfa': 'Overused term. Describe specific forensic analysis achievements and results.',
+            'gmon': 'Overused term. Describe specific continuous monitoring achievements and results.',
+            'gdat': 'Overused term. Describe specific detection and response achievements and results.',
+            'gcti': 'Overused term. Describe specific threat intelligence achievements and results.',
+            'grem': 'Overused term. Describe specific reverse engineering achievements and results.',
+            'gxpn': 'Overused term. Describe specific exploit development achievements and results.',
+            'gweb': 'Overused term. Describe specific web application security achievements and results.',
+            'gmoa': 'Overused term. Describe specific mobile application security achievements and results.',
+            'gcloud': 'Overused term. Describe specific cloud security achievements and results.',
+            'gdev': 'Overused term. Describe specific secure coding achievements and results.',
+            'gics': 'Overused term. Describe specific industrial control systems security achievements and results.',
+            'giot': 'Overused term. Describe specific IoT security achievements and results.',
+            'gcar': 'Overused term. Describe specific car hacking achievements and results.',
+            'gapt': 'Overused term. Describe specific advanced persistent threat achievements and results.',
+            'gmal': 'Overused term. Describe specific malware analysis achievements and results.'
+        };
+
+        // Check for problematic words
+        Object.entries(problematicWords).forEach(([word, reason]) => {
+            if (text.includes(word.toLowerCase())) {
+                analysis.toneIssues.push({
+                    word: word,
+                    reason: reason,
+                    severity: 'medium'
+                });
+                analysis.score -= 5;
+            }
+        });
 
         // Define tone and perception patterns that may sound arrogant or dismissive to reviewers
         const tonePatterns = [

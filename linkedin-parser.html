@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy-First Resume Review - Accessible Resume Analysis</title>
+    <title>LinkedIn Profile Parser - Privacy-First Resume Analysis</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="accessibility.css">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
@@ -51,78 +51,66 @@
     <div class="container">
         <header>
             <nav class="main-nav">
-                <a href="index.html" class="nav-link active">📄 Resume Analyzer</a>
-                <a href="linkedin-parser.html" class="nav-link">🔗 LinkedIn Parser</a>
+                <a href="index.html" class="nav-link">📄 Resume Analyzer</a>
+                <a href="linkedin-parser.html" class="nav-link active">🔗 LinkedIn Parser</a>
             </nav>
-            <h1>🔒 Privacy-First Resume Review</h1>
-            <p>Your resume never leaves your device. All analysis happens locally in your browser.</p>
+            <h1>🔗 LinkedIn Profile Parser</h1>
+            <p>Analyze your LinkedIn profile as a resume. All processing happens locally in your browser.</p>
         </header>
 
         <main>
-            <div class="template-section">
-                <h3>📋 Choose a Resume Template</h3>
-                <div class="template-grid">
-                    <button class="template-btn" data-template="mit-sloan" aria-describedby="mit-sloan-desc">
-                        <div class="template-icon" role="img" aria-label="Graduation cap icon">🎓</div>
-                        <h4>MIT Sloan</h4>
-                        <p>Academic & MBA format</p>
-                        <div id="mit-sloan-desc" class="sr-only">MIT Sloan template designed for academic and MBA applications with specific formatting requirements</div>
-                    </button>
-                    <button class="template-btn" data-template="cybersecurity" aria-describedby="cybersecurity-desc">
-                        <div class="template-icon" role="img" aria-label="Lock icon">🔒</div>
-                        <h4>Cybersecurity</h4>
-                        <p>InfoSec professional</p>
-                        <div id="cybersecurity-desc" class="sr-only">Cybersecurity template optimized for information security professionals and penetration testers</div>
-                    </button>
-                    <button class="template-btn" data-template="tech-industry" aria-describedby="tech-industry-desc">
-                        <div class="template-icon" role="img" aria-label="Computer icon">💻</div>
-                        <h4>Tech Industry</h4>
-                        <p>Software & engineering</p>
-                        <div id="tech-industry-desc" class="sr-only">Tech industry template designed for software engineers and technology professionals</div>
-                    </button>
-                    <button class="template-btn" data-template="consulting" aria-describedby="consulting-desc">
-                        <div class="template-icon" role="img" aria-label="Chart icon">📊</div>
-                        <h4>Consulting</h4>
-                        <p>Business & strategy</p>
-                        <div id="consulting-desc" class="sr-only">Consulting template focused on business strategy and client management roles</div>
-                    </button>
-                    <button class="template-btn" data-template="creative" aria-describedby="creative-desc">
-                        <div class="template-icon" role="img" aria-label="Palette icon">🎨</div>
-                        <h4>Creative</h4>
-                        <p>Design & marketing</p>
-                        <div id="creative-desc" class="sr-only">Creative template designed for designers, marketers, and creative professionals</div>
-                    </button>
-                    <button class="template-btn" data-template="traditional" aria-describedby="traditional-desc">
-                        <div class="template-icon" role="img" aria-label="Document icon">📄</div>
-                        <h4>Traditional</h4>
-                        <p>General professional</p>
-                        <div id="traditional-desc" class="sr-only">Traditional template suitable for general professional roles across various industries</div>
-                    </button>
-                </div>
-            </div>
+            <div class="linkedin-section">
+                <h3>🔗 LinkedIn Profile Analysis</h3>
+                <div class="linkedin-input-section">
+                    <div class="input-group">
+                        <label for="linkedinUrl" class="input-label">LinkedIn Profile URL:</label>
+                        <input type="url" id="linkedinUrl" placeholder="https://www.linkedin.com/in/your-profile" class="linkedin-input">
+                        <div class="input-help">
+                            <p>📋 <strong>Important:</strong> Make sure your LinkedIn profile is set to "Public" visibility for the parser to work properly.</p>
+                            <p>🔒 <strong>Privacy:</strong> Your profile data is processed entirely in your browser and never sent to any server.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="privacy-check-section">
+                        <h4>🔒 Privacy Settings Check</h4>
+                        <div class="privacy-instructions">
+                            <p>Before parsing, ensure your LinkedIn profile is publicly visible:</p>
+                            <ol>
+                                <li>Go to your LinkedIn profile</li>
+                                <li>Click the "More" button (three dots) on your profile</li>
+                                <li>Select "View profile as" → "Public"</li>
+                                <li>Verify that your profile information is visible to the public</li>
+                            </ol>
+                            <div class="privacy-warning">
+                                <strong>⚠️ Note:</strong> If your profile is private, the parser will not be able to extract your information.
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="template-preview" id="templatePreview" style="display: none;">
-                <h3>📝 Template Preview</h3>
-                <div class="preview-content" id="previewContent"></div>
-                <div class="template-actions">
-                    <button class="btn-primary" id="downloadTemplate">Download Template</button>
-                    <button class="btn-secondary" id="useTemplate">Use This Template</button>
+                    <div class="parse-actions">
+                        <button class="btn-primary" id="parseLinkedInBtn" disabled>
+                            🔍 Parse LinkedIn Profile
+                        </button>
+                        <button class="btn-secondary" id="testConnectionBtn">
+                            🔗 Test Connection
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="upload-section">
-                <div class="upload-area" id="uploadArea">
-                <div class="upload-content">
-                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" role="img" aria-label="Upload file icon">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7,10 12,15 17,10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    <h3>Upload Your Resume</h3>
-                    <p>Drop your PDF, DOCX, or TXT file here, or click to browse</p>
-                    <input type="file" id="fileInput" accept=".pdf,.docx,.txt" hidden aria-describedby="fileInputHelp">
-                    <div id="fileInputHelp" class="sr-only">Supported file formats: PDF, DOCX, and TXT files. Maximum file size: 10MB.</div>
+                <div class="parsing-status" id="parsingStatus" style="display: none;">
+                    <div class="status-indicator">
+                        <div class="spinner"></div>
+                        <p id="statusMessage">Connecting to LinkedIn profile...</p>
+                    </div>
                 </div>
+
+                <div class="profile-preview" id="profilePreview" style="display: none;">
+                    <h4>📋 Extracted Profile Information</h4>
+                    <div class="profile-content" id="profileContent"></div>
+                    <div class="profile-actions">
+                        <button class="btn-primary" id="analyzeProfileBtn">📊 Analyze as Resume</button>
+                        <button class="btn-secondary" id="editProfileBtn">✏️ Edit Profile Data</button>
+                    </div>
                 </div>
             </div>
 
@@ -134,14 +122,14 @@
             <div class="analysis-section" id="analysisSection" style="display: none;">
                 <div class="analyze-button-section">
                     <h3>📊 Ready to Analyze</h3>
-                    <p>Your resume has been uploaded successfully. Click the button below to analyze it with expert guidance.</p>
+                    <p>Your LinkedIn profile has been parsed successfully. Click the button below to analyze it with expert guidance.</p>
                     <button class="btn-primary" id="analyzeResumeBtn" style="font-size: 1.1rem; padding: 15px 30px;">
-                        🔍 Analyze Resume
+                        🔍 Analyze LinkedIn Profile
                     </button>
                 </div>
                 <div class="loading" id="loadingIndicator">
                     <div class="spinner"></div>
-                    <p>Analyzing your resume with expert cybersecurity guidance...</p>
+                    <p>Analyzing your LinkedIn profile with expert cybersecurity guidance...</p>
                 </div>
 
                 <div class="results" id="resultsContainer" style="display: none;">
@@ -230,7 +218,7 @@
                     </div>
 
                     <div class="resume-preview-section">
-                        <h3>📄 Resume Text Analyzed</h3>
+                        <h3>📄 LinkedIn Profile Text Analyzed</h3>
                         <div class="resume-preview">
                             <pre id="resumePreviewText"></pre>
                         </div>
@@ -252,12 +240,12 @@
 
                     <div class="interview-questions">
                         <h3>❓ Potential Interview Questions</h3>
-                        <p>Based on your resume content, be prepared to discuss:</p>
+                        <p>Based on your LinkedIn profile content, be prepared to discuss:</p>
                         <ul id="interviewQuestionsList"></ul>
                     </div>
 
                     <div class="ai-generation-section">
-                        <h3>🤖 AI-Powered Resume Enhancement</h3>
+                        <h3>🤖 AI-Powered Profile Enhancement</h3>
                         <div class="generation-options">
                             <button class="btn-primary" id="generateImprovedResume">Generate Improved Resume</button>
                             <button class="btn-secondary" id="generateCoverLetter">Generate Cover Letter</button>
@@ -277,67 +265,14 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="template-formatting-section">
-                        <h3>📋 Reformat Your Resume</h3>
-                        <p style="color: #666; margin-bottom: 20px; font-style: italic;">
-                            Choose a professional template to reformat your AI-generated resume with proper structure and industry-specific formatting
-                        </p>
-                        <div class="template-grid-bottom">
-                            <button class="template-btn-bottom" data-template="mit-sloan" aria-describedby="mit-sloan-bottom-desc">
-                                <div class="template-icon" role="img" aria-label="Graduation cap icon">🎓</div>
-                                <h4>MIT Sloan</h4>
-                                <p>Academic & MBA format</p>
-                                <div id="mit-sloan-bottom-desc" class="sr-only">Format your resume using MIT Sloan academic template</div>
-                            </button>
-                            <button class="template-btn-bottom" data-template="cybersecurity" aria-describedby="cybersecurity-bottom-desc">
-                                <div class="template-icon" role="img" aria-label="Lock icon">🔒</div>
-                                <h4>Cybersecurity</h4>
-                                <p>InfoSec professional</p>
-                                <div id="cybersecurity-bottom-desc" class="sr-only">Format your resume using cybersecurity professional template</div>
-                            </button>
-                            <button class="template-btn-bottom" data-template="tech-industry" aria-describedby="tech-industry-bottom-desc">
-                                <div class="template-icon" role="img" aria-label="Computer icon">💻</div>
-                                <h4>Tech Industry</h4>
-                                <p>Software & engineering</p>
-                                <div id="tech-industry-bottom-desc" class="sr-only">Format your resume using tech industry template</div>
-                            </button>
-                            <button class="template-btn-bottom" data-template="consulting" aria-describedby="consulting-bottom-desc">
-                                <div class="template-icon" role="img" aria-label="Chart icon">📊</div>
-                                <h4>Consulting</h4>
-                                <p>Business & strategy</p>
-                                <div id="consulting-bottom-desc" class="sr-only">Format your resume using consulting template</div>
-                            </button>
-                            <button class="template-btn-bottom" data-template="creative" aria-describedby="creative-bottom-desc">
-                                <div class="template-icon" role="img" aria-label="Palette icon">🎨</div>
-                                <h4>Creative</h4>
-                                <p>Design & marketing</p>
-                                <div id="creative-bottom-desc" class="sr-only">Format your resume using creative template</div>
-                            </button>
-                            <button class="template-btn-bottom" data-template="traditional" aria-describedby="traditional-bottom-desc">
-                                <div class="template-icon" role="img" aria-label="Document icon">📄</div>
-                                <h4>Traditional</h4>
-                                <p>General professional</p>
-                                <div id="traditional-bottom-desc" class="sr-only">Format your resume using traditional professional template</div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="template-preview-bottom" id="templatePreviewBottom" style="display: none;">
-                        <h3>📝 Template Preview</h3>
-                        <div class="preview-content" id="previewContentBottom"></div>
-                        <div class="template-actions">
-                            <button class="btn-primary" id="downloadTemplateBottom">Download Template</button>
-                            <button class="btn-secondary" id="useTemplateBottom">Use This Template</button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </main>
 
         <footer>
-            <p> <strong>Privacy Guarantee:</strong> Your resume is processed entirely in your browser. No data is sent to any server.</p>
+            <p> <strong>Privacy Guarantee:</strong> Your LinkedIn profile data is processed entirely in your browser. No data is sent to any server.</p>
             <p><small>Analysis based on Lesley Carhart's expert guidance for cybersecurity professionals</small></p>
+            <p><small>LinkedIn optimization tips courtesy of <a href="https://www.linkedin.com/in/cydneydavis/" target="_blank" rel="noopener noreferrer">Cydney Davis</a> - Professional LinkedIn strategist and career advisor</small></p>
             <p><small>Inspired by the cybersecurity community at <a href="https://infosec.exchange/deck/@mzbat" target="_blank" rel="noopener noreferrer">Infosec Exchange</a></small></p>
         </footer>
     </div>
@@ -346,6 +281,6 @@
     <script src="template-manager.js"></script>
     <script src="ai-content-generator.js"></script>
     <script src="accessibility.js"></script>
-    <script src="app.js"></script>
+    <script src="linkedin-parser.js"></script>
 </body>
 </html>
