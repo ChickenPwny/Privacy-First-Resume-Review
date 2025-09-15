@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy-First Resume Review - Accessible Resume Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="accessibility.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+    <!-- Accessibility Toolbar -->
+    <div class="accessibility-toolbar" id="accessibilityToolbar">
+        <div class="container">
+            <h2 class="sr-only">Accessibility Options</h2>
+            <div class="accessibility-controls">
+                <div class="control-group">
+                    <label for="fontSizeSlider" class="control-label">Font Size:</label>
+                    <input type="range" id="fontSizeSlider" min="12" max="24" value="16" aria-label="Adjust font size">
+                    <span id="fontSizeValue" aria-live="polite">16px</span>
+                </div>
+                <div class="control-group">
+                    <label for="contrastToggle" class="control-label">High Contrast:</label>
+                    <button id="contrastToggle" class="toggle-btn" aria-pressed="false" aria-label="Toggle high contrast mode">
+                        <span class="toggle-text">Off</span>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <label for="colorBlindToggle" class="control-label">Color Blind Friendly:</label>
+                    <button id="colorBlindToggle" class="toggle-btn" aria-pressed="false" aria-label="Toggle color blind friendly mode">
+                        <span class="toggle-text">Off</span>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <label for="focusIndicator" class="control-label">Enhanced Focus:</label>
+                    <button id="focusIndicator" class="toggle-btn" aria-pressed="false" aria-label="Toggle enhanced focus indicators">
+                        <span class="toggle-text">Off</span>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <button id="resetAccessibility" class="reset-btn" aria-label="Reset all accessibility settings to default">
+                        Reset Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>🔒 Privacy-First Resume Review</h1>
+            <p>Your resume never leaves your device. All analysis happens locally in your browser.</p>
+        </header>
+
+        <main>
+            <div class="template-section">
+                <h3>📋 Choose a Resume Template</h3>
+                <div class="template-grid">
+                    <button class="template-btn" data-template="mit-sloan" aria-describedby="mit-sloan-desc">
+                        <div class="template-icon" role="img" aria-label="Graduation cap icon">🎓</div>
+                        <h4>MIT Sloan</h4>
+                        <p>Academic & MBA format</p>
+                        <div id="mit-sloan-desc" class="sr-only">MIT Sloan template designed for academic and MBA applications with specific formatting requirements</div>
+                    </button>
+                    <button class="template-btn" data-template="cybersecurity" aria-describedby="cybersecurity-desc">
+                        <div class="template-icon" role="img" aria-label="Lock icon">🔒</div>
+                        <h4>Cybersecurity</h4>
+                        <p>InfoSec professional</p>
+                        <div id="cybersecurity-desc" class="sr-only">Cybersecurity template optimized for information security professionals and penetration testers</div>
+                    </button>
+                    <button class="template-btn" data-template="tech-industry" aria-describedby="tech-industry-desc">
+                        <div class="template-icon" role="img" aria-label="Computer icon">💻</div>
+                        <h4>Tech Industry</h4>
+                        <p>Software & engineering</p>
+                        <div id="tech-industry-desc" class="sr-only">Tech industry template designed for software engineers and technology professionals</div>
+                    </button>
+                    <button class="template-btn" data-template="consulting" aria-describedby="consulting-desc">
+                        <div class="template-icon" role="img" aria-label="Chart icon">📊</div>
+                        <h4>Consulting</h4>
+                        <p>Business & strategy</p>
+                        <div id="consulting-desc" class="sr-only">Consulting template focused on business strategy and client management roles</div>
+                    </button>
+                    <button class="template-btn" data-template="creative" aria-describedby="creative-desc">
+                        <div class="template-icon" role="img" aria-label="Palette icon">🎨</div>
+                        <h4>Creative</h4>
+                        <p>Design & marketing</p>
+                        <div id="creative-desc" class="sr-only">Creative template designed for designers, marketers, and creative professionals</div>
+                    </button>
+                    <button class="template-btn" data-template="traditional" aria-describedby="traditional-desc">
+                        <div class="template-icon" role="img" aria-label="Document icon">📄</div>
+                        <h4>Traditional</h4>
+                        <p>General professional</p>
+                        <div id="traditional-desc" class="sr-only">Traditional template suitable for general professional roles across various industries</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="template-preview" id="templatePreview" style="display: none;">
+                <h3>📝 Template Preview</h3>
+                <div class="preview-content" id="previewContent"></div>
+                <div class="template-actions">
+                    <button class="btn-primary" id="downloadTemplate">Download Template</button>
+                    <button class="btn-secondary" id="useTemplate">Use This Template</button>
+                </div>
+            </div>
+
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" role="img" aria-label="Upload file icon">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <h3>Upload Your Resume</h3>
+                    <p>Drop your PDF, DOCX, or TXT file here, or click to browse</p>
+                    <input type="file" id="fileInput" accept=".pdf,.docx,.txt" hidden aria-describedby="fileInputHelp">
+                    <div id="fileInputHelp" class="sr-only">Supported file formats: PDF, DOCX, and TXT files. Maximum file size: 10MB.</div>
+                </div>
+                </div>
+            </div>
+
+            <div class="job-description-section" id="jobDescriptionSection" style="display: none;">
+                <h3>Job Description (Optional)</h3>
+                <textarea id="jobDescription" placeholder="Paste the job description here for targeted analysis..."></textarea>
+            </div>
+
+            <div class="analysis-section" id="analysisSection" style="display: none;">
+                <div class="analyze-button-section">
+                    <h3>📊 Ready to Analyze</h3>
+                    <p>Your resume has been uploaded successfully. Click the button below to analyze it with expert guidance.</p>
+                    <button class="btn-primary" id="analyzeResumeBtn" style="font-size: 1.1rem; padding: 15px 30px;">
+                        🔍 Analyze Resume
+                    </button>
+                </div>
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>Analyzing your resume with expert cybersecurity guidance...</p>
+                </div>
+
+                <div class="results" id="resultsContainer" style="display: none;">
+                    <div class="score-card">
+                        <h3>Overall Score</h3>
+                        <div class="score-circle">
+                            <span id="overallScore">0</span>
+                            <small>/100</small>
+                        </div>
+                    </div>
+
+                    <div class="analysis-grid">
+                        <div class="analysis-card">
+                            <h4>📝 Content Quality</h4>
+                            <div class="score-bar">
+                                <div class="score-fill" id="contentScore"></div>
+                            </div>
+                            <p id="contentFeedback"></p>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>🎯 Keyword Match</h4>
+                            <div class="score-bar">
+                                <div class="score-fill" id="keywordScore"></div>
+                            </div>
+                            <p id="keywordFeedback"></p>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>📋 Structure & Format</h4>
+                            <div class="score-bar">
+                                <div class="score-fill" id="structureScore"></div>
+                            </div>
+                            <p id="structureFeedback"></p>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>💪 Action Verbs</h4>
+                            <div class="score-bar">
+                                <div class="score-fill" id="actionScore"></div>
+                            </div>
+                            <p id="actionFeedback"></p>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>🎯 Strategic Positioning</h4>
+                            <div class="score-bar">
+                                <div class="score-fill" id="strategicScore"></div>
+                            </div>
+                            <p id="strategicFeedback"></p>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>🎤 Interview Readiness</h4>
+                            <div class="score-bar">
+                                <div class="score-fill" id="interviewScore"></div>
+                            </div>
+                            <p id="interviewFeedback"></p>
+                        </div>
+
+                        <div class="analysis-card">
+                            <h4>🎭 Tone & Perception</h4>
+                            <div class="score-bar">
+                                <div class="score-fill" id="gatekeepingScore"></div>
+                            </div>
+                            <p id="gatekeepingFeedback"></p>
+                        </div>
+                    </div>
+
+                    <div class="suggestions">
+                        <h3>💡 Detailed Recommendations</h3>
+                        <ul id="suggestionsList"></ul>
+                    </div>
+
+                    <div class="line-issues-section">
+                        <h3>🔍 Line-by-Line Issues</h3>
+                        <div id="lineIssuesList" class="line-issues"></div>
+                    </div>
+
+                    <div class="gatekeeping-section">
+                        <h3>🎭 Tone & Perception Analysis</h3>
+                        <p style="color: #666; margin-bottom: 20px; font-style: italic;">
+                            Identifies language that may unintentionally sound arrogant, dismissive, or off-putting to hiring managers
+                        </p>
+                        <div id="gatekeepingIssuesList" class="gatekeeping-issues"></div>
+                    </div>
+
+                    <div class="resume-preview-section">
+                        <h3>📄 Resume Text Analyzed</h3>
+                        <div class="resume-preview">
+                            <pre id="resumePreviewText"></pre>
+                        </div>
+                    </div>
+
+                    <div class="keywords-section">
+                        <h3>🔍 Keyword Analysis</h3>
+                        <div class="keywords-grid">
+                            <div class="keyword-category">
+                                <h4>Found Keywords</h4>
+                                <div id="foundKeywords"></div>
+                            </div>
+                            <div class="keyword-category">
+                                <h4>Missing Keywords</h4>
+                                <div id="missingKeywords"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="interview-questions">
+                        <h3>❓ Potential Interview Questions</h3>
+                        <p>Based on your resume content, be prepared to discuss:</p>
+                        <ul id="interviewQuestionsList"></ul>
+                    </div>
+
+                    <div class="ai-generation-section">
+                        <h3>🤖 AI-Powered Resume Enhancement</h3>
+                        <div class="generation-options">
+                            <button class="btn-primary" id="generateImprovedResume">Generate Improved Resume</button>
+                            <button class="btn-secondary" id="generateCoverLetter">Generate Cover Letter</button>
+                            <button class="btn-secondary" id="generateLinkedInSummary">Generate LinkedIn Summary</button>
+                        </div>
+                        
+                        <div class="generated-content" id="generatedContent" style="display: none;">
+                            <div class="content-header">
+                                <h4 id="generatedContentTitle"></h4>
+                                <div class="content-actions">
+                                    <button class="btn-primary" id="copyGeneratedContent">Copy to Clipboard</button>
+                                    <button class="btn-secondary" id="downloadGeneratedContent">Download</button>
+                                </div>
+                            </div>
+                            <div class="content-body">
+                                <pre id="generatedContentText"></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="template-formatting-section">
+                        <h3>📋 Reformat Your Resume</h3>
+                        <p style="color: #666; margin-bottom: 20px; font-style: italic;">
+                            Choose a professional template to reformat your AI-generated resume with proper structure and industry-specific formatting
+                        </p>
+                        <div class="template-grid-bottom">
+                            <button class="template-btn-bottom" data-template="mit-sloan" aria-describedby="mit-sloan-bottom-desc">
+                                <div class="template-icon" role="img" aria-label="Graduation cap icon">🎓</div>
+                                <h4>MIT Sloan</h4>
+                                <p>Academic & MBA format</p>
+                                <div id="mit-sloan-bottom-desc" class="sr-only">Format your resume using MIT Sloan academic template</div>
+                            </button>
+                            <button class="template-btn-bottom" data-template="cybersecurity" aria-describedby="cybersecurity-bottom-desc">
+                                <div class="template-icon" role="img" aria-label="Lock icon">🔒</div>
+                                <h4>Cybersecurity</h4>
+                                <p>InfoSec professional</p>
+                                <div id="cybersecurity-bottom-desc" class="sr-only">Format your resume using cybersecurity professional template</div>
+                            </button>
+                            <button class="template-btn-bottom" data-template="tech-industry" aria-describedby="tech-industry-bottom-desc">
+                                <div class="template-icon" role="img" aria-label="Computer icon">💻</div>
+                                <h4>Tech Industry</h4>
+                                <p>Software & engineering</p>
+                                <div id="tech-industry-bottom-desc" class="sr-only">Format your resume using tech industry template</div>
+                            </button>
+                            <button class="template-btn-bottom" data-template="consulting" aria-describedby="consulting-bottom-desc">
+                                <div class="template-icon" role="img" aria-label="Chart icon">📊</div>
+                                <h4>Consulting</h4>
+                                <p>Business & strategy</p>
+                                <div id="consulting-bottom-desc" class="sr-only">Format your resume using consulting template</div>
+                            </button>
+                            <button class="template-btn-bottom" data-template="creative" aria-describedby="creative-bottom-desc">
+                                <div class="template-icon" role="img" aria-label="Palette icon">🎨</div>
+                                <h4>Creative</h4>
+                                <p>Design & marketing</p>
+                                <div id="creative-bottom-desc" class="sr-only">Format your resume using creative template</div>
+                            </button>
+                            <button class="template-btn-bottom" data-template="traditional" aria-describedby="traditional-bottom-desc">
+                                <div class="template-icon" role="img" aria-label="Document icon">📄</div>
+                                <h4>Traditional</h4>
+                                <p>General professional</p>
+                                <div id="traditional-bottom-desc" class="sr-only">Format your resume using traditional professional template</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="template-preview-bottom" id="templatePreviewBottom" style="display: none;">
+                        <h3>📝 Template Preview</h3>
+                        <div class="preview-content" id="previewContentBottom"></div>
+                        <div class="template-actions">
+                            <button class="btn-primary" id="downloadTemplateBottom">Download Template</button>
+                            <button class="btn-secondary" id="useTemplateBottom">Use This Template</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p> <strong>Privacy Guarantee:</strong> Your resume is processed entirely in your browser. No data is sent to any server.</p>
+            <p><small>Analysis based on Lesley Carhart's expert guidance for cybersecurity professionals</small></p>
+            <p><small>Inspired by the cybersecurity community at <a href="https://infosec.exchange/deck/@mzbat" target="_blank" rel="noopener noreferrer">Infosec Exchange</a></small></p>
+        </footer>
+    </div>
+
+    <script src="resume-analyzer.js"></script>
+    <script src="template-manager.js"></script>
+    <script src="ai-content-generator.js"></script>
+    <script src="accessibility.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

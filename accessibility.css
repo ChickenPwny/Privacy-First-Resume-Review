@@ -1,0 +1,363 @@
+/* Accessibility Styles for Resume Review Application */
+
+/* Screen Reader Only Content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Accessibility Toolbar */
+.accessibility-toolbar {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.accessibility-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.control-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+/* Font Size Slider */
+#fontSizeSlider {
+    width: 100px;
+    height: 6px;
+    border-radius: 3px;
+    background: #ddd;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+#fontSizeSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#fontSizeSlider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#fontSizeValue {
+    font-weight: 600;
+    color: #007bff;
+    min-width: 40px;
+    text-align: center;
+}
+
+/* Toggle Buttons */
+.toggle-btn {
+    background: #e9ecef;
+    border: 2px solid #dee2e6;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    min-width: 60px;
+}
+
+.toggle-btn:hover {
+    background: #dee2e6;
+    border-color: #adb5bd;
+}
+
+.toggle-btn[aria-pressed="true"] {
+    background: #007bff;
+    border-color: #0056b3;
+    color: white;
+}
+
+.toggle-btn[aria-pressed="true"] .toggle-text::after {
+    content: " ✓";
+}
+
+/* Reset Button */
+.reset-btn {
+    background: #dc3545;
+    color: white;
+    border: 2px solid #dc3545;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.reset-btn:hover {
+    background: #c82333;
+    border-color: #bd2130;
+}
+
+/* High Contrast Mode */
+body.high-contrast {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+body.high-contrast .container {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+body.high-contrast .card,
+body.high-contrast .template-section,
+body.high-contrast .upload-section,
+body.high-contrast .analysis-section,
+body.high-contrast .ai-generation-section,
+body.high-contrast .template-formatting-section {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+
+body.high-contrast .btn-primary {
+    background: #fff !important;
+    color: #000 !important;
+    border: 2px solid #fff !important;
+}
+
+body.high-contrast .btn-secondary {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+
+body.high-contrast .template-btn,
+body.high-contrast .template-btn-bottom {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+
+body.high-contrast .template-btn:hover,
+body.high-contrast .template-btn-bottom:hover,
+body.high-contrast .template-btn.active,
+body.high-contrast .template-btn-bottom.active {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+body.high-contrast .accessibility-toolbar {
+    background: #000 !important;
+    border-bottom: 2px solid #fff !important;
+}
+
+body.high-contrast .control-label {
+    color: #fff !important;
+}
+
+body.high-contrast .toggle-btn {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff !important;
+}
+
+body.high-contrast .toggle-btn[aria-pressed="true"] {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+/* Color Blind Friendly Mode */
+body.color-blind-friendly {
+    /* Protanopia/Deuteranopia friendly colors */
+    --primary-color: #0066cc;
+    --success-color: #00aa44;
+    --warning-color: #ff8800;
+    --danger-color: #cc0000;
+    --info-color: #0066aa;
+}
+
+body.color-blind-friendly .btn-primary {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+body.color-blind-friendly .btn-secondary {
+    background: var(--info-color) !important;
+    border-color: var(--info-color) !important;
+    color: white !important;
+}
+
+body.color-blind-friendly .score-excellent {
+    background: var(--success-color) !important;
+    color: white !important;
+}
+
+body.color-blind-friendly .score-good {
+    background: var(--warning-color) !important;
+    color: white !important;
+}
+
+body.color-blind-friendly .score-poor {
+    background: var(--danger-color) !important;
+    color: white !important;
+}
+
+body.color-blind-friendly .template-btn.active,
+body.color-blind-friendly .template-btn-bottom.active {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Enhanced Focus Indicators */
+body.enhanced-focus *:focus {
+    outline: 3px solid #ff6b35 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px rgba(255, 107, 53, 0.3) !important;
+}
+
+body.enhanced-focus .btn:focus,
+body.enhanced-focus .template-btn:focus,
+body.enhanced-focus .template-btn-bottom:focus {
+    outline: 3px solid #ff6b35 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px rgba(255, 107, 53, 0.3) !important;
+}
+
+body.enhanced-focus input:focus,
+body.enhanced-focus textarea:focus {
+    outline: 3px solid #ff6b35 !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 5px rgba(255, 107, 53, 0.3) !important;
+}
+
+/* Font Size Adjustments */
+body.font-size-12 {
+    font-size: 12px !important;
+}
+
+body.font-size-14 {
+    font-size: 14px !important;
+}
+
+body.font-size-16 {
+    font-size: 16px !important;
+}
+
+body.font-size-18 {
+    font-size: 18px !important;
+}
+
+body.font-size-20 {
+    font-size: 20px !important;
+}
+
+body.font-size-22 {
+    font-size: 22px !important;
+}
+
+body.font-size-24 {
+    font-size: 24px !important;
+}
+
+/* Responsive Accessibility */
+@media (max-width: 768px) {
+    .accessibility-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .control-group {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .control-label {
+        min-width: 120px;
+        text-align: left;
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .template-btn:hover,
+    .template-btn-bottom:hover {
+        transform: none !important;
+    }
+}
+
+/* High Contrast Media Query Support */
+@media (prefers-contrast: high) {
+    .card,
+    .template-section,
+    .upload-section,
+    .analysis-section {
+        border: 2px solid currentColor !important;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        border: 2px solid currentColor !important;
+    }
+}
+
+/* Print Accessibility */
+@media print {
+    .accessibility-toolbar {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .card,
+    .template-section,
+    .upload-section,
+    .analysis-section {
+        border: 1px solid black !important;
+        background: white !important;
+        color: black !important;
+    }
+}
